@@ -1,53 +1,42 @@
 import tkinter as tk
-import requests
+from googletrans import Translator
 
-class LanguageTranslatorApp:
+class TranslationApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Language Translator")
+        self.root.title("Language Translation App")
         
-        self.create_widgets()
-        
-    def create_widgets(self):
-        # Input text box
-        self.input_text_box = tk.Text(self.root, height=10, width=40)
-        self.input_text_box.pack(padx=10, pady=10)
-        
-        # Translate button
-        self.translate_button = tk.Button(self.root, text="Translate", command=self.translate_text)
-        self.translate_button.pack(pady=5)
-        
-        # Output text box
-        self.output_text_box = tk.Text(self.root, height=10, width=40)
-        self.output_text_box.pack(padx=10, pady=10)
-        
-    def translate_text(self):
-        input_text = self.input_text_box.get("1.0", "end-1c")
-        target_language = "fr"  # Change this to the desired target language code
-        
-        # Replace with your API endpoint and API key
-        api_endpoint = "YOUR_API_ENDPOINT"
-        api_key = "YOUR_API_KEY"
-        
-        # Make API request
-        response = requests.post(
-            api_endpoint,
-            headers={"Authorization": f"Bearer {api_key}"},
-            data={"text": input_text, "target_lang": target_language}
-        )
-        
-        if response.status_code == 200:
-            translated_text = response.json().get("translated_text", "Translation Error")
-            self.output_text_box.delete("1.0", "end")
-            self.output_text_box.insert("1.0", translated_text)
-        else:
-            self.output_text_box.delete("1.0", "end")
-            self.output_text_box.insert("1.0", "Translation Error")
+        self.translator = Translator()
 
-def main():
-    root = tk.Tk()
-    app = LanguageTranslatorApp(root)
-    root.mainloop()
+        self.label = tk.Label(root, text="Enter text to translate:")
+        self.label.pack(pady=10)
+
+        self.input_text = tk.Text(root, height=5, width=40)
+        self.input_text.pack()
+
+        self.translate_button = tk.Button(root, text="Translate", command=self.translate_text)
+        self.translate_button.pack(pady=10)
+
+        self.output_label = tk.Label(root, text="Translated text:")
+        self.output_label.pack()
+
+        self.output_text = tk.Text(root, height=5, width=40)
+        self.output_text.pack()
+
+    def translate_text(self):
+        input_text = self.input_text.get("1.0", "end-1c")
+        translated_text = self.translate(input_text)
+        self.output_text.delete("1.0", "end")
+        self.output_text.insert("1.0", translated_text)
+
+    def translate(self, text):
+        try:
+            translation = self.translator.translate(text, src="en", dest="hi")  # Translate from English to Hindi
+            return translation.text
+        except Exception as e:
+            return str(e)
 
 if __name__ == "__main__":
-    main()
+    root = tk.Tk()
+    app = TranslationApp(root)
+    root.mainloop()
