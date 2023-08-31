@@ -1,0 +1,53 @@
+import tkinter as tk
+import requests
+
+class LanguageTranslatorApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Language Translator")
+        
+        self.create_widgets()
+        
+    def create_widgets(self):
+        # Input text box
+        self.input_text_box = tk.Text(self.root, height=10, width=40)
+        self.input_text_box.pack(padx=10, pady=10)
+        
+        # Translate button
+        self.translate_button = tk.Button(self.root, text="Translate", command=self.translate_text)
+        self.translate_button.pack(pady=5)
+        
+        # Output text box
+        self.output_text_box = tk.Text(self.root, height=10, width=40)
+        self.output_text_box.pack(padx=10, pady=10)
+        
+    def translate_text(self):
+        input_text = self.input_text_box.get("1.0", "end-1c")
+        target_language = "fr"  # Change this to the desired target language code
+        
+        # Replace with your API endpoint and API key
+        api_endpoint = "YOUR_API_ENDPOINT"
+        api_key = "YOUR_API_KEY"
+        
+        # Make API request
+        response = requests.post(
+            api_endpoint,
+            headers={"Authorization": f"Bearer {api_key}"},
+            data={"text": input_text, "target_lang": target_language}
+        )
+        
+        if response.status_code == 200:
+            translated_text = response.json().get("translated_text", "Translation Error")
+            self.output_text_box.delete("1.0", "end")
+            self.output_text_box.insert("1.0", translated_text)
+        else:
+            self.output_text_box.delete("1.0", "end")
+            self.output_text_box.insert("1.0", "Translation Error")
+
+def main():
+    root = tk.Tk()
+    app = LanguageTranslatorApp(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
